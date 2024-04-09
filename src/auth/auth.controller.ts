@@ -13,7 +13,9 @@ import { SignUpDto } from './sign-up.dto.ts/sign-up.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { SignInDto } from './sign-up.dto.ts/sign-in.dto';
 import { Response } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('인증')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

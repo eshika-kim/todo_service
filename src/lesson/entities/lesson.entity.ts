@@ -4,6 +4,7 @@ import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   ManyToOne,
   PrimaryColumn,
@@ -19,15 +20,31 @@ export class Lesson {
   @PrimaryColumn({ unsigned: true })
   userId: number;
 
+  /**
+   * 강사 id
+   * @example 2
+   */
   @PrimaryColumn({ unsigned: true })
   instructorId: number;
 
+  /**
+   * 요일
+   * @example 1
+   */
   @Column()
   dayOfWeek: number;
 
+  /**
+   * 시작 시간
+   * @example 08:30
+   */
   @Column({ type: 'time' })
   startTime: string;
 
+  /**
+   * 종료 시간
+   * @example 09:30
+   */
   @Column({ type: 'time' })
   endTime: string;
 
@@ -36,6 +53,9 @@ export class Lesson {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 
   @ManyToOne(() => User, (user) => user.lessons)
   user: User[];

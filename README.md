@@ -2,6 +2,7 @@
 과제제출용 private github
 
 ## API Receipt
+swagger : localhost:3000/api
 회원가입(POST)
 url | http://localhost:3000/api/auth/sign-up
 body | phone, password

@@ -1,13 +1,18 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Lesson } from './entities/lesson.entity';
 import {
-  LessThan,
   LessThanOrEqual,
   MoreThan,
   MoreThanOrEqual,
+  Not,
   Repository,
 } from 'typeorm';
 
@@ -18,6 +23,10 @@ export class LessonService {
     private readonly lessonRepository: Repository<Lesson>,
   ) {}
 
+  /**
+   * 레슨 신청 가능한 스케쥴 반환 메서드
+   * @returns Array[]
+   */
   async getSchedule() {
     const currentDate = new Date();
     const lessonSchedule = [];
@@ -59,6 +68,12 @@ export class LessonService {
     return lessonSchedule;
   }
 
+  /**
+   * findAll에서 찾은 배열에 일치하는 값이 있는 지 반환
+   * @param currentTime
+   * @param allLessons
+   * @returns boolean
+   */
   isReservedLesson(currentTime: Date, allLessons: Lesson[]): boolean {
     // 예약된 레슨 확인
     const dayOfWeek = currentTime.getDay();
@@ -75,48 +90,25 @@ export class LessonService {
     return isReserved;
   }
 
+  // create => isValidTimeInterval => findReservedLesson
   async create(userId: number, createLessonDto: CreateLessonDto) {
     const { instructorId, dayOfWeek, startTime, endTime } = createLessonDto;
-    const convertTime = (time) => {
-      const [hours, minute] = time.split(':').map(Number);
-      return hours * 60 + minute;
-    };
 
-    const estimatedTime = convertTime(endTime) - convertTime(startTime);
-    if (![30, 60].includes(estimatedTime)) {
-      throw new BadRequestException(
-        '시작 시간과 종료 시간은 30분 또는 1시간 간격이어야 합니다.',
-      );
+    // 레슨시간이 30분 간격인지 1시간 간격인지 확인
+    if (!this.isValidTimeInterval(startTime, endTime)) {
+      throw new BadRequestException('레슨은 30분, 1시간 간격이어야 합니다.');
     }
 
-    // 예약하려는 시간 전에 레슨의 시간을 확인합니다.
-    // 레슨의 시간대의 시작이 예약 시작시간보다 작고
-    // 종료가 예약 시작시간보다 크면 불가능합니다.
-    // ex) 예약시간 7:30 ~ 8:00, 레슨시간 7:00 ~ 8:00 or 7:30 ~ 8:00
-    const beforeLesson = await this.lessonRepository.findOne({
-      where: {
+    // 신청하려는 레슨 시간이 가능한지 확인
+    if (
+      !(await this.findReservedLesson(
         instructorId,
         dayOfWeek,
-        startTime: LessThanOrEqual(startTime),
-        endTime: MoreThan(startTime),
-      },
-    });
-
-    // 예약하려는 시간 후의 레슨의 시간을 확인합니다.
-    // 레슨의 시간대의 시작이 예약시작 시간보다 크고
-    // 종료시간이 예약 종료 시간보다 크면 불가능합니다.
-    // ex) 예약시간 7:30 ~ 8:30, 레슨시간 8:00 ~ 9:00
-    const afterLesson = await this.lessonRepository.findOne({
-      where: {
-        instructorId,
-        dayOfWeek,
-        startTime: MoreThan(startTime),
-        endTime: MoreThan(endTime),
-      },
-    });
-
-    if (beforeLesson || afterLesson) {
-      throw new BadRequestException('해당 시간에 이미 예약된 레슨이 있습니다.');
+        startTime,
+        endTime,
+      ))
+    ) {
+      throw new ConflictException('해당 시간에 이미 예약된 레슨이 있습니다.');
     }
     const reservedLesson = await this.lessonRepository.save({
       userId,
@@ -139,5 +131,103 @@ export class LessonService {
       throw new BadRequestException('해당하는 레슨 정보가 없습니다.');
     }
     return findMyLesson;
+  }
+
+  // updateLesson => isValidTimeInterval => findReservedLesson
+  // create와 예외처리가 비슷함
+  async updateLesson(
+    userId: number,
+    id: number,
+    updateLessonDto: UpdateLessonDto,
+  ) {
+    const { instructorId, dayOfWeek, startTime, endTime } = updateLessonDto;
+    console.log(instructorId);
+    // 레슨시간이 30분 간격인지 1시간 간격인지 확인
+    if (!this.isValidTimeInterval(startTime, endTime)) {
+      throw new BadRequestException('레슨은 30분, 1시간 간격이어야 합니다.');
+    }
+    // 해당 레슨이 존재하는지 확인
+    const findLesson = await this.lessonRepository.findOne({
+      where: {
+        userId,
+        id,
+      },
+    });
+
+    if (!findLesson) {
+      throw new NotFoundException('해당 ID의 레슨을 찾을 수 없습니다.');
+    }
+    // 신청하려는 레슨 시간이 가능한지 확인
+    if (
+      await this.findReservedLesson(instructorId, dayOfWeek, startTime, endTime)
+    ) {
+      throw new ConflictException('해당 시간에 이미 예약된 레슨이 있습니다.');
+    }
+
+    findLesson.instructorId = instructorId;
+    findLesson.dayOfWeek = dayOfWeek;
+    findLesson.startTime = startTime;
+    findLesson.endTime = endTime;
+
+    return await this.lessonRepository.update({ id: id }, findLesson);
+  }
+
+  async cancelLesson(userId: number, id: number) {
+    const findLesson = await this.lessonRepository.findOne({
+      where: {
+        userId,
+        id,
+      },
+    });
+    if (findLesson) {
+      await this.lessonRepository.softDelete({ id, userId });
+      return true;
+    }
+  }
+
+  // 레슨 신청 시간이 30분 혹은 1시간인지 확인하는 함수
+  isValidTimeInterval(startTime: string, endTime: string): boolean {
+    const convertTime = (time: string) => {
+      const [hours, minute] = time.split(':').map(Number);
+      return hours * 60 + minute;
+    };
+
+    const estimatedTime = convertTime(endTime) - convertTime(startTime);
+    return [30, 60].includes(estimatedTime);
+  }
+
+  // 신청하려는 레슨이 예약된 레슨인지 확인하는 함수
+  async findReservedLesson(
+    instructorId: number,
+    dayOfWeek: number,
+    startTime: string,
+    endTime: string,
+  ): Promise<boolean> {
+    // 예약하려는 시간 전에 레슨의 시간을 확인합니다.
+    // 레슨의 시간대의 시작이 예약 시작시간보다 작고
+    // 종료가 예약 시작시간보다 크면 불가능합니다.
+    // ex) 예약시간 7:30 ~ 8:00, 레슨시간 7:00 ~ 8:00 or 7:30 ~ 8:00
+    const beforeLesson = await this.lessonRepository.findOne({
+      where: {
+        instructorId,
+        dayOfWeek,
+        startTime: LessThanOrEqual(startTime),
+        endTime: MoreThan(startTime),
+      },
+    });
+
+    // 예약하려는 시간 후의 레슨의 시간을 확인합니다.
+    // 레슨의 시간대의 시작이 예약시작 시간보다 크고
+    // 종료시간이 예약 종료 시간보다 크면 불가능합니다.
+    // ex) 예약시간 7:30 ~ 8:30, 레슨시간 8:00 ~ 9:00
+    const afterLesson = await this.lessonRepository.findOne({
+      where: {
+        instructorId,
+        dayOfWeek,
+        startTime: MoreThan(startTime),
+        endTime: MoreThanOrEqual(endTime),
+      },
+    });
+    return !!beforeLesson || !!afterLesson;
   }
 }

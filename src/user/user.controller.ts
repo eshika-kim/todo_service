@@ -8,7 +8,9 @@ import {
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/strategies/jwt-auth';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('유저정보')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

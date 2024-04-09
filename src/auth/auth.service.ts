@@ -13,14 +13,14 @@ export class AuthService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
   async signUp(signUpDto: SignUpDto) {
-    const { phone, password } = signUpDto;
+    const { name, phone, password } = signUpDto;
 
     const existedUser = await this.userRepository.findOneBy({ phone });
     if (existedUser) {
       throw new BadRequestException('이미 회원가입이 되어있습니다.');
     }
 
-    const user = await this.userRepository.save({ phone, password });
+    const user = await this.userRepository.save({ name, phone, password });
     return this.signIn(user.id);
   }
 
@@ -31,7 +31,7 @@ export class AuthService {
     return { accessToken };
   }
 
-  async validateUser({ phone, password }: SignInDto) {
+  async validateUser({ name, phone, password }: SignInDto) {
     const user = await this.userRepository.findOne({
       where: { phone },
       select: { id: true, password: true },
