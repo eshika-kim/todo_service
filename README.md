@@ -1,40 +1,42 @@
-# project
-과제제출용 private github
+<div align=center>
+  <h1>Tennis Lesson</h1>
+  Uglyus 과제 테니스 정기 레슨 신청 API 만들기
+</div>
 
 ## API Receipt
-swagger : localhost:3000/api
-회원가입(POST)
-url | http://localhost:3000/api/auth/sign-up
-body | phone, password
-
-로그인(POST)
-url | http://localhost:3000/api/auth/sign-in
-body | phone, password
-
-레슨 가능 시간대 조회(GET)
-url | http://localhost:3000/api/lessons
-
-레슨 신청하기(POST)
-url | http://localhost:3000/api/lessons
-body | instructorId, dayOfWeek, startTime, endTime
-req | userId
-
-신청한 레슨 조회(GET)
-url | http://localhost:3000/api/lessons/:id
-req | userId
-
-신청한 레슨 수정(PATCH)
-url | http://localhost:3000/api/lessons/:id
-body | instructorId, dayOfWeek, startTime, endTime
-req | userId
-
-신청한 레슨 취소(DELETE)
-url | http://localhost:3000/api/lessons/:id
-req | userId
-
+swagger : localhost:3000/api<br><br>
+**회원가입(POST)**<br>
+url | http://localhost:3000/api/auth/sign-up<br>
+body | phone, password<br>
+<br>
+**로그인(POST)**<br>
+url | http://localhost:3000/api/auth/sign-in<br>
+body | phone, password<br>
+<br>
+**레슨 가능 시간대 조회(GET)**<br>
+url | http://localhost:3000/api/lessons<br>
+<br>
+**레슨 신청하기(POST)**<br>
+url | http://localhost:3000/api/lessons<br>
+body | instructorId, dayOfWeek, startTime, endTime<br>
+req | userId<br>
+<br>
+**신청한 레슨 조회(GET)**<br>
+url | http://localhost:3000/api/lessons/:id<br>
+req | userId<br>
+<br>
+**신청한 레슨 수정(PATCH)**<br>
+url | http://localhost:3000/api/lessons/:id<br>
+body | instructorId, dayOfWeek, startTime, endTime<br>
+req | userId<br>
+<br>
+**신청한 레슨 취소(DELETE)**<br>
+url | http://localhost:3000/api/lessons/:id<br>
+req | userId<br>
+<br>
 ## 💾 ERD Structure
 ![ERD structure](/img/erd.png)
-
+<br>
 ## 💡 사용한 패키지 및 라이브러리
 |Skill|Desciption|
 |:---|:---:|
