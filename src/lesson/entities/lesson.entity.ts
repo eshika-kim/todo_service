@@ -1,3 +1,4 @@
+import { IsNotEmpty, IsNumber, Matches } from 'class-validator';
 import { Instructor } from 'src/instructor/entities/instructor.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
@@ -22,7 +23,7 @@ export class Lesson {
   instructorId: number;
 
   @Column()
-  dayOfWeek: string;
+  dayOfWeek: number;
 
   @Column({ type: 'time' })
   startTime: string;

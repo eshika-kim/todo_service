@@ -18,6 +18,11 @@ import { Response } from 'express';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   * 회원가입
+   * @param signUpDto
+   * @returns
+   */
   @Post('/sign-up')
   async signUp(@Body() signUpDto: SignUpDto) {
     const data = await this.authService.signUp(signUpDto);
@@ -28,6 +33,13 @@ export class AuthController {
     };
   }
 
+  /**
+   * 로그인
+   * @param req
+   * @param signInDto
+   * @param response
+   * @returns
+   */
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('local'))
   @Post('/sign-in')

@@ -1,34 +1,62 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+  HttpStatus,
+} from '@nestjs/common';
 import { LessonService } from './lesson.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
+import { JwtAuthGuard } from 'src/auth/strategies/jwt-auth';
 
-@Controller('lesson')
+@Controller('lessons')
 export class LessonController {
   constructor(private readonly lessonService: LessonService) {}
 
-  @Post()
-  create(@Body() createLessonDto: CreateLessonDto) {
-    return this.lessonService.create(createLessonDto);
-  }
-
+  /**
+   * 레슨 가능 일정 정보받기
+   * @returns allSchedule [{},{},...,{}]
+   */
   @Get()
-  findAll() {
-    return this.lessonService.findAll();
+  async find() {
+    const allSchedule = await this.lessonService.getSchedule();
+    return {
+      statusCode: HttpStatus.OK,
+      allSchedule,
+    };
   }
 
+  /**
+   * 레슨 신청하기
+   * @param createLessonDto
+   * @param req
+   * @returns
+   */
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  async create(@Body() createLessonDto: CreateLessonDto, @Request() req) {
+    const userId = req.user.id;
+    await this.lessonService.create(userId, createLessonDto);
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: '레슨이 예약되었습니다.',
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.lessonService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLessonDto: UpdateLessonDto) {
-    return this.lessonService.update(+id, updateLessonDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.lessonService.remove(+id);
+  async getLesson(@Param('id') id: number, @Request() req) {
+    const userId = req.user.id;
+    const mylesson = await this.lessonService.getMyLesson(userId, id);
+    return {
+      statusCode: HttpStatus.OK,
+      mylesson,
+    };
   }
 }
