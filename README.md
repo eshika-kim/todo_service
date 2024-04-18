@@ -120,6 +120,6 @@ body(JSON) |<br>
 **todo 삭제(DELTE)**<br>
 url | http://localhost:3000/api/todos/{id}<br>
 ## 💾 ERD Structure
-![ERD structure](/img/erd.png)
+![ERD structure](/img/drawSQL-image-export-2024-04-18.png)
 <br>
 
