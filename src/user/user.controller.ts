@@ -6,7 +6,6 @@ import {
   HttpStatus,
   Body,
   Patch,
-  Delete,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/strategies/jwt-auth';

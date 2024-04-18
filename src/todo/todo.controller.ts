@@ -21,9 +21,9 @@ export class TodoController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Request() req, @Body() body) {
+  async create(@Request() req, @Body() createTodoDto: CreateTodoDto) {
     const userId = req.user.id;
-    const data = await this.todoService.create(body, userId);
+    const data = await this.todoService.create(createTodoDto, userId);
     return {
       statusCode: HttpStatus.CREATED,
       message: 'Todo를 생성하였습니다.',
@@ -31,7 +31,8 @@ export class TodoController {
     };
   }
 
-  // 수정한 순으로 정렬한 todo 조회하기
+  // 수정한 순(최신순)으로 정렬한 todo 조회하기
+  // default
   @UseGuards(JwtAuthGuard)
   @Get()
   async findUserTodos(@Request() req) {
@@ -59,9 +60,9 @@ export class TodoController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Request() req, @Param('id') id: number, @Body() body) {
+  update(@Request() req, @Param('id') id: number, @Body() updateTodoDto:UpdateTodoDto) {
     const userId = req.user.id;
-    const data = this.todoService.update(+id, userId, body);
+    const data = this.todoService.update(+id, userId, updateTodoDto);
     return {
       statusCode: HttpStatus.OK,
       message: 'Todo를 수정하였습니다.',

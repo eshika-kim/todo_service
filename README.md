@@ -6,8 +6,9 @@
 
 </div>
 <br>
+
 ## 테이블 생성 쿼리<br>
-CREATE DATABASE simplelogis<br>
+CREATE DATABASE simplelogis
 
 ## 데이터 쿼리 파일위치<br>
 루트폴더 > user.sql
@@ -67,7 +68,7 @@ body(JSON) |<br>
     "cost": 3000
 }
 <br>
-**Todo 만들기 (POST)**<br>
+**Todo 만들기 (POST)**<br><br>
 url | http://localhost:3000/api/todos<br>
 body(JSON) |<br>
 성공 예시<br>
@@ -119,7 +120,7 @@ body(JSON) |<br>
     "content":123,
     "flag":3,
     "priority":4
-}
+}<br><br>
 **todo 삭제(DELTE)**<br>
 url | http://localhost:3000/api/todos/{id}<br>
 ## 💾 ERD Structure

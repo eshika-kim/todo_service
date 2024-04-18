@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Todo } from './entities/todo.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
+import { UpdateTodoDto } from './dto/update-todo.dto';
 
 @Injectable()
 export class TodoService {
@@ -16,8 +17,8 @@ export class TodoService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
   // todo 생성
-  async create(body, userId: number) {
-    const { content, flag, priority } = body;
+  async create(createTodoDto, userId: number) {
+    const { content, flag, priority } = createTodoDto;
     // user가 생성한 todo 개수 불러오기
     const [todoCount] = await this.todoRepository.query(
       'SELECT COUNT(*) as CNT FROM todo WHERE user_id = ?',
@@ -53,8 +54,8 @@ export class TodoService {
     throw new NotFoundException('Todo를 생성할 수 없습니다.');
   }
 
-  // 유저가 만든 todo 조회
-  // 수정한 순으로 정렬
+  // 유저가 만든 todo 조회 : INNER JOIN사용
+  // 수정한 순으로 내림차순 정렬(최신순)
   async findUserTodos(userId: number) {
     const myTodos = await this.userRepository.query(
       'SELECT u.email, t.content, t.flag, t.priority, t.created_at, t.updated_at ' +
@@ -86,8 +87,8 @@ export class TodoService {
   }
 
   // todoId로 수정하기
-  async update(id: number, userId: number, body) {
-    const { content, flag, priority } = body;
+  async update(id: number, userId: number, updateTodoDto:UpdateTodoDto) {
+    const { content, flag, priority } = updateTodoDto;
     const [findTodo] = await this.todoRepository.query(
       'SELECT * FROM todo WHERE id = ?',
       [id],

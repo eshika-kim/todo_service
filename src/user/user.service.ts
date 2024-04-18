@@ -19,6 +19,7 @@ export class UserService {
     return user;
   }
 
+  // 회원 plan 변경하는 service로직
   async updatePlan(userId:number, updateUserDto: UpdateUserDto) {
     const { cost, plan } = updateUserDto;
     if (cost === 3000 && plan === 'BASIC') {
@@ -32,7 +33,7 @@ export class UserService {
         'UPDATE user SET plan = ? WHERE id = ?',
         [plan, userId],
       );
-    } else {
+    } else { // 이 이외의 값은 모두 에러가 나도록 처리
       throw new BadRequestException(
         '3000원 - BASIC, 5000원 - PRO 만 결제할 수 있습니다.',
       );
