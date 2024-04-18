@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { SignUpDto } from './sign-up.dto.ts/sign-up.dto';
+import { SignUpDto } from './dtos/sign-up.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
-import { SignInDto } from './sign-up.dto.ts/sign-in.dto';
+import { SignInDto } from './dtos/sign-in.dto';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -13,14 +13,14 @@ export class AuthService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
   async signUp(signUpDto: SignUpDto) {
-    const { name, phone, password } = signUpDto;
+    const { email, password } = signUpDto;
 
-    const existedUser = await this.userRepository.findOneBy({ phone });
+    const existedUser = await this.userRepository.findOneBy({ email });
     if (existedUser) {
       throw new BadRequestException('이미 회원가입이 되어있습니다.');
     }
 
-    const user = await this.userRepository.save({ name, phone, password });
+    const user = await this.userRepository.save({ email, password, plan:'FREE'});
     return this.signIn(user.id);
   }
 
@@ -31,9 +31,9 @@ export class AuthService {
     return { accessToken };
   }
 
-  async validateUser({ name, phone, password }: SignInDto) {
+  async validateUser({email, password }: SignInDto) {
     const user = await this.userRepository.findOne({
-      where: { phone },
+      where: { email },
       select: { id: true, password: true },
     });
 
@@ -42,5 +42,12 @@ export class AuthService {
     }
 
     return { id: user.id }; //jwt token만들어줄 payload
+  }
+
+  async findById(id: number) {
+    const user = await this.userRepository.findOne({
+      where: {id}
+    })
+    return {id : user.id}
   }
 }

@@ -1,6 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
-import { Lesson } from 'src/lesson/entities/lesson.entity';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { Todo } from 'src/todo/entities/todo.entity';
 import {
   Column,
   CreateDateColumn,
@@ -15,32 +14,20 @@ export class User {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
 
-  /**
-   * 이름
-   * @example "김세령"
-   */
   @Column()
-  @IsNotEmpty({ message: '성함을 입력해주세요' })
-  @IsString({ message: '이름이 형식에 맞지않습니다' })
-  name: string;
+  @IsNotEmpty({ message: '이메일을 입력해주세요.' })
+  @IsEmail({}, { message: '이메일 형식이 맞지않습니다' })
+  email: string;
 
-  /**
-   * 핸드폰 번호
-   * @example "01012345678"
-   */
-  @Column({ unique: true })
-  @IsNotEmpty({ message: '핸드폰번호를 입력해주세요' })
-  @IsString({ message: '핸드폰번호 형식에 맞지않습니다' })
-  phone: string;
-
-  /**
-   * 비밀번호
-   * @example "a1234"
-   */
   @Column()
   @IsNotEmpty({ message: '비밀번호를 입력해주세요' })
   @IsString({ message: '숫자+영소문자 조합으로 입력해주세요' })
   password: string;
+
+  @Column()
+  @IsNotEmpty({ message: 'plan 기본값은 free입니다.' })
+  @IsString({ message: 'FREE, BASIC, PRO 중 하나를 입력해주세요' })
+  plan: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -48,6 +35,6 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Lesson, (lesson) => lesson.user)
-  lessons: Lesson[];
+  @OneToMany((type) => Todo, (todo) => todo.user)
+  todos: Todo[];
 }

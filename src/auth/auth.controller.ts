@@ -9,9 +9,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignUpDto } from './sign-up.dto.ts/sign-up.dto';
+import { SignUpDto } from './dtos/sign-up.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { SignInDto } from './sign-up.dto.ts/sign-in.dto';
+import { SignInDto } from './dtos/sign-in.dto';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 

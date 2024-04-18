@@ -7,8 +7,7 @@ import { configModuleValidationSchema } from './configs/env-validation.config';
 import { typeOrmModuleOptions } from './configs/database.config';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-import { LessonModule } from './lesson/lesson.module';
-import { InstructorModule } from './instructor/instructor.module';
+import { TodoModule } from './todo/todo.module';
 
 @Module({
   imports: [
@@ -19,8 +18,7 @@ import { InstructorModule } from './instructor/instructor.module';
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     AuthModule,
     UserModule,
-    LessonModule,
-    InstructorModule,
+    TodoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

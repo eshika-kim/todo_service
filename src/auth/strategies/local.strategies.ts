@@ -7,13 +7,13 @@ import { AuthService } from '../auth.service';
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AuthService) {
     super({
-      usernameField: 'phone',
+      usernameField: 'email',
       passwordField: 'password',
     });
   }
 
-  async validate(name: string, phone: string, password: string) {
-    const user = await this.authService.validateUser({ name, phone, password });
+  async validate(email: string, password: string) {
+    const user = await this.authService.validateUser({ email, password });
 
     if (!user) {
       throw new UnauthorizedException('일치하는 인증 정보가 없습니다.');
