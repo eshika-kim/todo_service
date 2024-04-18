@@ -31,11 +31,30 @@ export class TodoController {
     };
   }
 
+  // 수정한 순으로 정렬한 todo 조회하기
   @UseGuards(JwtAuthGuard)
   @Get()
   async findUserTodos(@Request() req) {
     const userId = req.user.id;
-    return await this.todoService.findUserTodos(userId);
+    const data = await this.todoService.findUserTodos(userId);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
+  }
+
+  // 중요도로 정렬한 뒤 한 번에 볼 개수 5개로 제한
+  // 예시 http://localhost:3000/api/todos/priority/2
+  // 2페이지의 5개 보기
+  @UseGuards(JwtAuthGuard)
+  @Get('/priority/:page')
+  async findTodosByPriority(@Request() req, @Param('page') page: string) {
+    const userId = req.user.id;
+    const data = await this.todoService.findTodosByPriority(userId, +page);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @UseGuards(JwtAuthGuard)

@@ -17,6 +17,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+  // 테스트용 유저 정보 확인 로직
   @UseGuards(JwtAuthGuard)
   @Get('/me')
   async find(@Request() req) {
@@ -30,6 +31,7 @@ export class UserController {
     };
   }
 
+  // 결제하여 회원등급 변경
   @UseGuards(JwtAuthGuard)
   @Patch('/plan')
   async updatePlan(@Body() updateUserDto: UpdateUserDto, @Request() req) {
@@ -38,18 +40,6 @@ export class UserController {
     return {
       statusCode: HttpStatus.OK,
       message: '성공',
-      data,
-    };
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Delete()
-  async deleteUser(@Request() req) {
-    const userId = req.user.id;
-    const data = await this.userService.deleteUser(userId);
-    return {
-      statusCode: HttpStatus.OK,
-      message: '유저 삭제 성공',
       data,
     };
   }

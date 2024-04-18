@@ -38,8 +38,4 @@ export class UserService {
       );
     }
   }
-
-  async deleteUser(userId: number) {
-    await this.userRepository.query('DELETE FROM user WHERE id = ?', [userId])
-  }
 }
