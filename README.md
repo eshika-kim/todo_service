@@ -6,9 +6,12 @@
 
 </div>
 <br>
-## 테이블 생성 쿼리
+## 테이블 생성 쿼리<br>
+CREATE DATABASE simplelogis<br>
 
-
+## 데이터 쿼리 파일위치<br>
+루트폴더 > user.sql
+루트폴더 > todo.sql
 <br>
 ## 서버 실행 방법<br>
 1) 패키지 설치 npm i <br>
