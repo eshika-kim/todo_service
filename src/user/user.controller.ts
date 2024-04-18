@@ -6,6 +6,7 @@ import {
   UseGuards,
   HttpStatus,
   Body,
+  Patch,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -31,7 +32,7 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/plan')
+  @Patch('/plan')
   async updatePlan(@Body() updateUserDto:UpdateUserDto, @Request() req ) {
     const userId = req.user.id;
     const data = await this.userService.updatePlan(userId, updateUserDto);

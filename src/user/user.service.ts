@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -21,6 +21,14 @@ export class UserService {
 
   async updatePlan(userId:number, updateUserDto: UpdateUserDto) {
     const {cost} = updateUserDto
-    
+    if(cost === 3000) {
+      return await this.userRepository.update({id: userId},{plan: 'BASIC'} )
+    }
+    if(cost === 5000) {
+      return await this.userRepository.update({id: userId}, {plan: 'PRO'})
+    }
+    else {
+      return new BadRequestException('3000원, 5000원만 결제할 수 있습니다.')
+    }
   }
 }
