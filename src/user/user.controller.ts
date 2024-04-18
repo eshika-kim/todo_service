@@ -1,15 +1,14 @@
 import {
   Controller,
   Get,
-  Post,
   Request,
   UseGuards,
   HttpStatus,
   Body,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/strategies/jwt-auth';
 import { ApiTags } from '@nestjs/swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -33,12 +32,24 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('/plan')
-  async updatePlan(@Body() updateUserDto:UpdateUserDto, @Request() req ) {
+  async updatePlan(@Body() updateUserDto: UpdateUserDto, @Request() req) {
     const userId = req.user.id;
     const data = await this.userService.updatePlan(userId, updateUserDto);
     return {
       statusCode: HttpStatus.OK,
       message: '성공',
+      data,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  async deleteUser(@Request() req) {
+    const userId = req.user.id;
+    const data = await this.userService.deleteUser(userId);
+    return {
+      statusCode: HttpStatus.OK,
+      message: '유저 삭제 성공',
       data,
     };
   }

@@ -20,15 +20,26 @@ export class UserService {
   }
 
   async updatePlan(userId:number, updateUserDto: UpdateUserDto) {
-    const {cost} = updateUserDto
-    if(cost === 3000) {
-      return await this.userRepository.update({id: userId},{plan: 'BASIC'} )
+    const { cost, plan } = updateUserDto;
+    if (cost === 3000 && plan === 'BASIC') {
+      return await this.userRepository.query(
+        'UPDATE user SET plan = ? WHERE id = ?',
+        [plan, userId],
+      );
     }
-    if(cost === 5000) {
-      return await this.userRepository.update({id: userId}, {plan: 'PRO'})
+    if (cost === 5000 && plan === 'PRO') {
+      return await this.userRepository.query(
+        'UPDATE user SET plan = ? WHERE id = ?',
+        [plan, userId],
+      );
+    } else {
+      throw new BadRequestException(
+        '3000원 - BASIC, 5000원 - PRO 만 결제할 수 있습니다.',
+      );
     }
-    else {
-      return new BadRequestException('3000원, 5000원만 결제할 수 있습니다.')
-    }
+  }
+
+  async deleteUser(userId: number) {
+    await this.userRepository.query('DELETE FROM user WHERE id = ?', [userId])
   }
 }
