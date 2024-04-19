@@ -21,8 +21,8 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Tennis Lesson')
-    .setDescription('Document for Tennis Lesson API')
+    .setTitle('Todo Service')
+    .setDescription('Document for Todo Service API')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
