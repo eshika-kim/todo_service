@@ -206,6 +206,6 @@ body(JSON) |<br>
 ---
 
 ## 💾 ERD Structure
-![ERD structure](/img/drawSQL-image-export-2024-04-18.png)
+![ERD structure](/img/drawSQL-image-export-2024-04-19.png)
 <br>
 
