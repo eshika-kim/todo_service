@@ -58,6 +58,8 @@ export class TodoController {
     };
   }
 
+  // todoId를 param으로 보내 수정하기
+  // useGuards를 이용해 userId가 작성자면 수정가능 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(@Request() req, @Param('id') id: number, @Body() updateTodoDto:UpdateTodoDto) {
@@ -70,6 +72,8 @@ export class TodoController {
     };
   }
 
+  // todoId를 param으로 보내 삭제하기
+  // useGuards를 이용해 userId가 작성자면 삭제가능 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Request() req, @Param('id') id: number) {
