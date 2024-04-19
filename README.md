@@ -23,7 +23,7 @@ CREATE DATABASE simplelogis
 루트폴더 > todo.sql
 ```
 
-<br>
+
 ## 서버 실행 방법<br>
 
 ```sh
