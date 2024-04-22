@@ -7,8 +7,8 @@
 </div>
 <br>
 
-## 테이블 생성 쿼리<br>
-.env는 편의상 일부러 삭제하지 않았습니다.
+## 참고 사항 <br>
+.env는 편의상 삭제하지 않았습니다.
 
 ## 테이블 생성 쿼리<br>
 
@@ -19,16 +19,21 @@ CREATE DATABASE simplelogis
 ## 데이터 쿼리 파일위치<br>
 
 ```
-루트폴더 > user.sql
-루트폴더 > todo.sql
+# 루트폴더
+user.sql
+# 루트폴더
+todo.sql
 ```
 
 
 ## 서버 실행 방법<br>
 
 ```sh
-1) 패키지 설치 npm i
-2) 서버 실행 npm run start:dev
+# 1) 패키지 설치
+$ npm i
+
+# 2) 서버 실행
+$ npm run start:dev
 ```
 
 ## API Receipt
