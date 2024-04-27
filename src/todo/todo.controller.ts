@@ -9,6 +9,7 @@ import {
   Request,
   UseGuards,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
@@ -23,7 +24,7 @@ export class TodoController {
   @Post()
   async create(@Request() req, @Body() createTodoDto: CreateTodoDto) {
     const userId = req.user.id;
-    const data = await this.todoService.create(createTodoDto, userId);
+    const data: void = await this.todoService.create(createTodoDto, userId);
     return {
       statusCode: HttpStatus.CREATED,
       message: 'Todo를 생성하였습니다.',
@@ -31,40 +32,46 @@ export class TodoController {
     };
   }
 
-  // 수정한 순(최신순)으로 정렬한 todo 조회하기
-  // default
+  // todo 조회하기(overloading)
+  // default : 수정한 날짜 오름차순
+  // http://localhost:3000/api/todos?page=2
+  // page : 조회할 페이지(1페이지 = 5개씩) 추가 반환 값 + 전체개수
+  // 중요도 순, 완료 여부 순 => 어떤 방식으로 요청을 받아올지??
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findUserTodos(@Request() req) {
+  async findUserTodos(
+    @Query('sort') sort: string,
+    @Query('page') page: number,
+    @Request() req,
+  ) {
     const userId = req.user.id;
-    const data = await this.todoService.findUserTodos(userId);
+    const data: object = await this.todoService.findUserTodos(
+      userId,
+      page,
+      sort,
+    );
     return {
       statusCode: HttpStatus.OK,
-      data,
-    };
-  }
-
-  // 중요도로 정렬한 뒤 한 번에 볼 개수 5개로 제한
-  // 예시 http://localhost:3000/api/todos/priority/2
-  // 2페이지의 5개 보기
-  @UseGuards(JwtAuthGuard)
-  @Get('/priority/:page')
-  async findTodosByPriority(@Request() req, @Param('page') page: string) {
-    const userId = req.user.id;
-    const data = await this.todoService.findTodosByPriority(userId, +page);
-    return {
-      statusCode: HttpStatus.OK,
+      count: Object.keys(data).length,
       data,
     };
   }
 
   // todoId를 param으로 보내 수정하기
-  // useGuards를 이용해 userId가 작성자면 수정가능 
+  // useGuards를 이용해 userId가 작성자면 수정가능
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Request() req, @Param('id') id: number, @Body() updateTodoDto:UpdateTodoDto) {
+  async update(
+    @Request() req,
+    @Param('id') id: number,
+    @Body() updateTodoDto: UpdateTodoDto,
+  ) {
     const userId = req.user.id;
-    const data = this.todoService.update(+id, userId, updateTodoDto);
+    const data: void = await this.todoService.update(
+      +id,
+      userId,
+      updateTodoDto,
+    );
     return {
       statusCode: HttpStatus.OK,
       message: 'Todo를 수정하였습니다.',
@@ -73,12 +80,12 @@ export class TodoController {
   }
 
   // todoId를 param으로 보내 삭제하기
-  // useGuards를 이용해 userId가 작성자면 삭제가능 
+  // useGuards를 이용해 userId가 작성자면 삭제가능
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Request() req, @Param('id') id: number) {
+  async remove(@Request() req, @Param('id') id: number) {
     const userId = req.user.id;
-    const data = this.todoService.removeTodo(id, userId);
+    const data: void = await this.todoService.removeTodo(id, userId);
     return {
       statusCode: HttpStatus.OK,
       message: `TodoId: ${id} 번을 삭제하였습니다.`,

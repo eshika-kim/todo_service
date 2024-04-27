@@ -7,6 +7,24 @@
 </div>
 <br>
 
+## 04/26 feedback
+
+1) todo 수정/삭제 시 성공 메세지 반환 => 실패 메세지 반환(400)
+
+2) todo 조회 : find 메서드 한 개로 설정
+=> findTodosByPriority 메서드 삭제
+2-1) 정렬 기준 : 쿼리 string
+http://localhost:3000/api/todos?sort=priority
+2-2) 페이지네이션 : 쿼리 string
+http://localhost:3000/api/todos?page=2
+RESTful API 기준으로 생각하면 정렬을 먼저 한 다음 페이지가 결정되기
+때문에 아래 URL이 맞지만 반대로 들어가도 조회가 되는데
+http://localhost:3000/api/todos?sort=priority&page=2
+2-3) 반환 값 페이지 내 todo 개수, user_id와 todo_id 추가
+
+
+3) todo 생성 : 예외처리 한 번에 처리하여 코드 반복 줄임
+
 ## 참고 사항 <br>
 .env는 편의상 삭제하지 않았습니다.
 
