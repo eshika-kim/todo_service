@@ -63,7 +63,7 @@ export class TodoService {
       'SELECT t.user_id, u.email, t.id, t.content, t.flag, t.priority, t.created_at, t.updated_at ' +
         'FROM user u ' +
         'INNER JOIN todo t ON u.id = t.user_id ' +
-        'WHERE u.id = ? ' +
+        'WHERE u.id = ? AND t.deleted_at IS NULL ' +
         'ORDER BY ' +
         sort +
         ' DESC ' +
@@ -107,8 +107,9 @@ export class TodoService {
     if (findTodo.user_id !== userId) {
       throw new UnauthorizedException('작성자만 수정 가능합니다.');
     }
-    return await this.todoRepository.query('DELETE FROM TODO WHERE id = ?', [
-      id,
-    ]);
+    return await this.todoRepository.query(
+      'UPDATE todo SET deleted_at = NOW() WHERE id = ?',
+      [id],
+    );
   }
 }
