@@ -50,17 +50,22 @@ export class TodoService {
 
   // 유저가 만든 todo 조회 : INNER JOIN사용
   // 수정한 순으로 내림차순 정렬(최신순)
-  async findUserTodos(userId: number, page: number, sort: string) {
-    const pageSize = 5;
-    const offset = page ? (page - 1) * pageSize : 1;
-    const sortType = sort ? sort : 'updated_at';
+  async findUserTodos(
+    userId: number,
+    sort: string,
+    size: string,
+    page: string,
+  ) {
+    const pageSize = parseInt(size);
+    const offset = page ? (parseInt(page) - 1) * pageSize : 0;
+
     return await this.userRepository.query(
       'SELECT t.user_id, u.email, t.id, t.content, t.flag, t.priority, t.created_at, t.updated_at ' +
         'FROM user u ' +
         'INNER JOIN todo t ON u.id = t.user_id ' +
         'WHERE u.id = ? ' +
         'ORDER BY ' +
-        sortType +
+        sort +
         ' DESC ' +
         'LIMIT ? OFFSET ?;',
       [userId, pageSize, offset],

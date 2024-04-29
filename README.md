@@ -2,28 +2,55 @@
   <h1>TODO 정기 구독 서비스</h1>
   비회원은 email, password로 가입<br>
   처음 가입 시 plan은 FREE<br>
-  
-
 </div>
 <br>
 
 ## 04/26 feedback
 
-1) todo 수정/삭제 시 성공 메세지 반환 => 실패 메세지 반환(400)
+1) todo 수정/삭제 시 아이디가 없을 때 성공 메세지 반환하는 오류<br><br>
 
-2) todo 조회 : find 메서드 한 개로 설정
-=> findTodosByPriority 메서드 삭제
-2-1) 정렬 기준 : 쿼리 string
-http://localhost:3000/api/todos?sort=priority
-2-2) 페이지네이션 : 쿼리 string
-http://localhost:3000/api/todos?page=2
-RESTful API 기준으로 생각하면 정렬을 먼저 한 다음 페이지가 결정되기
-때문에 아래 URL이 맞지만 반대로 들어가도 조회가 되는데
-http://localhost:3000/api/todos?sort=priority&page=2
-2-3) 반환 값 페이지 내 todo 개수, user_id와 todo_id 추가
+실패 메세지 반환(400)하도록 변경<br><br>
 
+2) todo 조회 : find 메서드 여러 개 => 한 개 <br><br>
 
-3) todo 생성 : 예외처리 한 번에 처리하여 코드 반복 줄임
+```
+/src/todo/todo.service.ts
+```
+
+2-1) 반환 값 변경 : user_id, todo_id, count값 포함하여 return<br><br>
+
+2-2) 정렬 기준 : default로 1페이지 조회<br>
+
+```
+수정최신 정렬 : http://localhost:3000/api/todos
+우선순위 정렬 : http://localhost:3000/api/todos?sort=priority
+완료여부 정렬 : http://localhost:3000/api/todos?sort=flag
+```
+
+2-2) 한 번에 볼 todo개수 : 5 or 10개 default로 1페이지<br>
+```
+수정최신 정렬 : http://localhost:3000/api/todos?size=10
+우선순위 정렬 : http://localhost:3000/api/todos?sort=priority&size=10
+완료여부 정렬 : http://localhost:3000/api/todos?sort=flag&size=10
+```
+2-3) 페이지 번호로 todo 조회<br>
+```
+수정최신 정렬 : http://localhost:3000/api/todos?size=10&page=2
+우선순위 정렬 : http://localhost:3000/api/todos?sort=priority&size=10&page=2
+완료여부 정렬 : http://localhost:3000/api/todos?sort=flag&size=10&page=2
+```
+
+3) todo 생성 : 예외처리 한 번에 처리하여 코드 반복 줄임 <br>
+```
+/src/todo/todo.service.ts 34 ~ 44번째 줄
+```
+
+4) 회원가입 시 숫자+영소문자 조합 처리 => 정규표현식 사용 <br>
+
+```
+/src/user/entities/user.entity.ts
+```
+
 
 ## 참고 사항 <br>
 .env는 편의상 삭제하지 않았습니다.
@@ -35,7 +62,7 @@ CREATE DATABASE simplelogis
 ```
 
 ## 데이터 쿼리 파일위치<br>
-
+update 하였습니다!
 ```
 # 루트폴더
 user.sql

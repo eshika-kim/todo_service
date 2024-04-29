@@ -15,6 +15,7 @@ import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { JwtAuthGuard } from 'src/auth/strategies/jwt-auth';
+import { FindUserTodosDto } from './dto/get-todo.dto';
 
 @Controller('todos')
 export class TodoController {
@@ -39,16 +40,13 @@ export class TodoController {
   // 중요도 순, 완료 여부 순 => 어떤 방식으로 요청을 받아올지??
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findUserTodos(
-    @Query('sort') sort: string,
-    @Query('page') page: number,
-    @Request() req,
-  ) {
+  async findUserTodos(@Query() query: FindUserTodosDto, @Request() req) {
     const userId = req.user.id;
     const data: object = await this.todoService.findUserTodos(
       userId,
-      page,
-      sort,
+      query.sort,
+      query.size,
+      query.page,
     );
     return {
       statusCode: HttpStatus.OK,

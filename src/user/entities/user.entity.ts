@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
 import { Todo } from 'src/todo/entities/todo.entity';
 import {
   Column,
@@ -22,6 +22,9 @@ export class User {
   @Column()
   @IsNotEmpty({ message: '비밀번호를 입력해주세요' })
   @IsString({ message: '숫자+영소문자 조합으로 입력해주세요' })
+  @Matches(/^(?=.*[0-9])(?=.*[a-z]).*$/, {
+    message: '숫자와 영소문자의 조합이 필요합니다',
+  })
   password: string;
 
   @Column()
