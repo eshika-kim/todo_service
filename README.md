@@ -7,50 +7,75 @@
 
 ## 04/26 feedback
 
-1) todo 수정/삭제 시 아이디가 없을 때 성공 메세지 반환하는 오류<br><br>
+### USER CREATE
+- 회원가입 시 비밀번호가 영소문자 + 숫자 조합을 하지 않아도 string타입이면 통과 됨
+  - DTO에 정규식 표현을 넣어 영소문자 + 숫자조합만 통과되도록 변경
+  ```
+  /src/user/entities/user.entity.ts 22 ~ 28번째 줄
+  ```
 
-실패 메세지 반환(400)하도록 변경<br><br>
-
-2) todo 조회 : find 메서드 여러 개 => 한 개 <br><br>
+### TODO GET
+1. find 메서드 여러 개 => 한 개로 변경 <br>
 
 ```
 /src/todo/todo.service.ts
 ```
 
-2-1) 반환 값 변경 : user_id, todo_id, count값 포함하여 return<br><br>
+2. 반환 값 추가 : user_id, todo_id, count 포함 <br><br>
 
-2-2) 정렬 기준 : default로 1페이지 조회<br>
-
+3. 정렬 방식 변경 <br>
+- sort 
 ```
 수정최신 정렬 : http://localhost:3000/api/todos
 우선순위 정렬 : http://localhost:3000/api/todos?sort=priority
 완료여부 정렬 : http://localhost:3000/api/todos?sort=flag
 ```
 
-2-2) 한 번에 볼 todo개수 : 5 or 10개 default로 1페이지<br>
+- 한 번에 볼 todo개수 : 5 or 10개 (기본 값 : 5)<br>
 ```
 수정최신 정렬 : http://localhost:3000/api/todos?size=10
 우선순위 정렬 : http://localhost:3000/api/todos?sort=priority&size=10
 완료여부 정렬 : http://localhost:3000/api/todos?sort=flag&size=10
 ```
-2-3) 페이지 번호로 todo 조회<br>
+- 페이지 번호 조회<br>
 ```
 수정최신 정렬 : http://localhost:3000/api/todos?size=10&page=2
 우선순위 정렬 : http://localhost:3000/api/todos?sort=priority&size=10&page=2
 완료여부 정렬 : http://localhost:3000/api/todos?sort=flag&size=10&page=2
 ```
 
-3) todo 생성 : 예외처리 한 번에 처리하여 코드 반복 줄임 <br>
+4. 쿼리 유효성 검사 dto 추가
+```
+/src/todo/dto/get-todo.dto.ts
+```
+
+### TODO CREATE
+- 예외처리 한 번에 처리하여 코드 반복 감소 <br>
 ```
 /src/todo/todo.service.ts 34 ~ 44번째 줄
 ```
 
-4) 회원가입 시 숫자+영소문자 조합 처리 => 정규표현식 사용 <br>
+### TODO UPDATE
+- todo 수정 시 아이디가 없을 때 성공 메세지 반환하는 오류<br>
+  - 실패 메세지 반환(400)하도록 변경<br>
 
-```
-/src/user/entities/user.entity.ts
-```
+### TODO DELETE
+- todo 삭제 시 아이디가 없을 때 성공 메세지 반환하는 오류<br>
+  - 실패 메세지 반환(400)하도록 변경<br>
+- 물리적 삭제 => 논리적 삭제로 변경
+  ```
+  /src/todo/todo.service.ts 110~112번째 줄
+  ```
+  이로 인한 select query도 deleted_at = null만 조회하도록 변경하였습니다!
 
+## 데이터 쿼리 파일 변경<br>
+update 하였습니다!
+```
+# 루트폴더
+user_240429.sql
+# 루트폴더
+todo_240429.sql
+```
 
 ## 참고 사항 <br>
 .env는 편의상 삭제하지 않았습니다.
@@ -61,14 +86,7 @@
 CREATE DATABASE simplelogis
 ```
 
-## 데이터 쿼리 파일위치<br>
-update 하였습니다!
-```
-# 루트폴더
-user.sql
-# 루트폴더
-todo.sql
-```
+
 
 
 ## 서버 실행 방법<br>
